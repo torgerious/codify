@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
+    import {Component, Prop, Vue} from 'vue-property-decorator';
     import { codemirror } from "vue-codemirror"
     import 'codemirror/lib/codemirror.css'
     import 'codemirror/mode/javascript/javascript.js'
@@ -15,8 +15,13 @@
         }
     })
     export default class Editor extends Vue {
-        code:string =  'const a = 10';
-        answer:string = '<p>hello there</p>';
+
+        @Prop({default:''}) correctAnswer: string | undefined;
+        @Prop({default:'text/html'}) language:string | undefined;
+
+        code:string =  '<p>hello</p>';
+        answer:string = '<p>hello</p>';
+        currentAnswer:string = '';
         cmOptions = {
             // codemirror options
             tabSize: 4,
@@ -39,17 +44,20 @@
         onCmFocus(cm) {
             // console.log('the editor is focus!', cm);
         };
-        onCmCodeChange(newCode) {
+        onCmCodeChange(newCode:any) {
             // console.log('this is new code', newCode);
             this.code = newCode;
         }
 
 
-        get codemirror() {
-            return this.$refs.myCm.codemirror
-        }
+        // get codemirror() {
+        //     return this.$refs.myCm.codemirror
+        // }
 
-        runCode():void{
+        runCode(incomingCode:string):void{
+            let lastCode:string;
+            this.currentAnswer = this.code;
+
             let newCode = this.code.replace(/\s/g,'');
             let answer = this.answer.replace(/\s/g,'');
 
@@ -73,11 +81,12 @@
 </script>
 
 <template>
-    <div>
-        <h1>Editor page</h1>
+    <div class="editor__wrapper">
         <!--<editor ref='myEditor'></editor>-->
+        <div class="editor__wrapper--action">
         <button @click="runCode">Run code</button>
-        <div class="editor">
+        </div>
+        <div class="editor__wrapper--code">
             <codemirror ref="myCm"
                         :value="code"
                         :options="cmOptions"
@@ -86,14 +95,54 @@
                         @input="onCmCodeChange">
             </codemirror>
         </div>
+        <div class="editor__wrapper--result">
+
+            <div v-html="currentAnswer">
+                <!-- dynamic content -->
+            </div>
+
+        </div>
     </div>
 </template>
 
 
 <style lang="scss" scoped>
-   .editor{
-       width:500px;
-       height:500px;
-   }
+    .editor__wrapper{
+        width:1000px;
+        height:550px;
+        button{
+            height: 30px;
+            display: inline;
+            float: left;
+            margin: 11px;
+            background: black;
+            color: #ff4b59;
+            border-radius: 2px;
+            border: none;
+        }
+        &--action{
+            height: 50px;
+            display: inline-block;
+            width: 100%;
+            background: #2d3451;
+            box-sizing: border-box;
+            margin-bottom: -4px;
+        }
+        &--code{
+           width:500px;
+           height:500px;
+           display: inline-block;
+        }
+        &--result{
+            width:500px;
+            height:500px;
+            display: inline-block;
+            background: #f8f8f8;
+            div{
+                float: left;
+                padding: 50px;
+            }
+        }
+    }
 
 </style>

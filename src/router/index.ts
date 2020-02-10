@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Editor from "@/views/Editor.vue";
+import HtmlCourse from "@/views/tutorials/webdevelopment/html/HtmlCourse.vue";
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/editor',
     name: 'editor',
     component: Editor
+  },
+  {
+    path: '/step',
+    name: 'step',
+    component: HtmlCourse
   },
   {
     path: '/about',

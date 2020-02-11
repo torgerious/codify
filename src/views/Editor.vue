@@ -25,11 +25,63 @@
         @Prop({default:''}) correctAnswer: string | undefined;
         @Prop({default:'text/html'}) language:string | undefined;
 
+        course = {
+            questions : [
+                {
+                    text: '<h1>Complete Webdevelopment</h1><p>Welcome to the webdevelopment course.</p><p>In this course we will go through the basics of webdevelopment and build a complete website from start to finish</p>\<h2>What to expect from the course</h2>\<p>When you have completed this course you should be qualified to start experimenting with code on your own and create basic static websites.</p>\<p>This course will give you the tools, but you will have to take your knowledge beyond this course and experiment by yourself.</p>\<p>Alright, lets get started!</p>',
+                    hasCodeChallenge: false,
+                    answer: '<p>Hello world</p>',
+                    language:'html',
+                    startCode: ''
+                },
+                {
+                    text: '<h1>Website basic concepts</h1><p>A website is basically a folder containing a lot of text files. And the URL is just a way to open those text files through the web.<p>Those text files is called HTML (Hyper text markup language) and is what we are going to start to learn first<p>HTML is what we call a markup language and is responsible for how we structure our Text, images, and input fields etc<p>Then we have a language called CSS (Cascading Style Sheets). CSS is responsible for how we style our HTML by chatext color, size, and placement of HTML elements<p>HTML and CSS is usually what every modern website on the web is using.</p>',
+                    hasCodeChallenge: false,
+                    answer: '<p>Hello world</p>',
+                    language:'html',
+                    startCode: ''
+                },
+                {
+                    text: '<h1>The HTML Paragraph tag</h1> <p>Lets begin writing some HTML code. There is a code editor to the right. You will use this editor throughout the course. When you think you have enteredthe correct code for the current step. Hit the buttton \'Run code\' to see if it is correct.</p> <p>We will begin with the HTML Paragraph tag. This is how you write text on a website. Everything between the "&lt;p&gt; &lt;p&gt;" will be rendered as text on the web</p>' +
+                        ' <p class="instructions">1. Write the following code and hit the \'Run Code\' button' +
+                        '<span class="tag">&lt;p&gt; <span class="tag-text">Hello world</span> &lt;/p&gt;</span></p> <br>',
+                    hasCodeChallenge: true,
+                    answer: '<p>Hello world</p>',
+                    language:'html',
+                    startCode: ''
+                },
+                {
+                    text: '<h1>The HTML structure tags</h1> <ul>' +
+                        '<li>The <span class="tag-blank">&lt;!DOCTYPE html&gt;</span> declaration defines this document to be HTML5 The </li>' +
+                        '<li>The <span class="tag-blank"> &lt;html&gt;</span> element is the root element of an HTML page</li>' +
+                        '<li>The <span class="tag-blank"> &lt;head&gt;</span> element contains meta information about the document</li>' +
+                        '<li>The <span class="tag-blank"> &lt;title&gt;</span> element contains meta information about the document</li>' +
+                        '<li>The <span class="tag-blank"> &lt;body&gt;</span> element contains meta information about the document</li>' +
+                        '<li>The <span class="tag-blank"> &lt;h1&gt;</span> element contains meta information about the document</li>' +
+                        '</ul>' +
+
+                        '<p class="instructions">1. Write the following ' +
+                        '<span class="tag">&lt;head&gt;&lt;/head&gt;</span>' +
+                        '<span class="tag">&lt;body&gt; <br>  ' +
+                        '<span class="indent">&lt;h1&gt;<span class="tag-text">Heading</span>&lt;/h1&gt;</span>' +
+                        '<br> &lt;/body&gt;</span>  </p>',
+                    hasCodeChallenge: true,
+                    answer: '<head></head>',
+                    language:'html',
+                    startCode: ''
+                }
+            ],
+            title:'HTML course',
+        };
+        maxStepProgress:number = 2;
+        feedbackType:string = 'success';
+        feedbackMessage:string = '';
         currentStep: number = 0;
         amountOfSteps:number = 17;
         progressWidth:number = 0;
-        code:string =  '<p>hello</p>';
-        answer:string = '<p>hello</p>';
+        code:string =  '';
+        isShowingFeedback:boolean = false;
+        // answer:string = '<p>hello</p>';
         currentAnswer:string = '';
         cmOptions = {
             // codemirror options
@@ -73,13 +125,7 @@
         }
 
         get stepHasEditor():boolean{
-            if(this.currentStep === 0){
-                return false;
-            }
-            if(this.currentStep === 1){
-                return false;
-            }
-            return true;
+            return this.course.questions[this.currentStep].hasCodeChallenge
         }
 
         runCode(incomingCode:string):void{
@@ -87,16 +133,28 @@
             this.currentAnswer = this.code;
 
             let newCode = this.code.replace(/\s/g,'');
-            let answer = this.answer.replace(/\s/g,'');
+            let answer = this.course.questions[this.currentStep].answer.replace(/\s/g,'');
 
-            console.log("newcode", newCode);
-            console.log("newcode", answer);
+            console.log("entered code", newCode);
+            console.log("answer code", answer);
+            clearTimeout();
 
             if(newCode === answer){
-                alert("they alike");
+                // alert("they alike");
+                this.feedbackMessage = "Correct!";
+                this.feedbackType = 'success';
+                this.isShowingFeedback = true;
+
+                this.currentStep = this.currentStep + 1;
+                this.maxStepProgress = this.currentStep;
+
+                setTimeout(() => {this.isShowingFeedback = false;}, 5000);
             }
             else {
-                console.log("not like")
+                this.feedbackMessage = "Not quite correct!";
+                this.feedbackType = 'fail';
+                this.isShowingFeedback = true;
+                setTimeout(() => {this.isShowingFeedback = false;}, 5000);
             }
 
         }
@@ -111,8 +169,8 @@
         }
 
         mounted(){
-            console.log('this is current codemirror object', this.codemirror)
-
+            // console.log('this is current codemirror object', this.codemirror)
+            console.log(this.course);
         }
     }
 </script>
@@ -121,6 +179,10 @@
     <div class="editor__wrapper">
         <!--<editor ref='myEditor'></editor>-->
 
+        <div v-if="isShowingFeedback" class="alert" :class="{'success': feedbackType === 'success', 'fail': feedbackType === 'fail'}">
+            <p>{{feedbackMessage}}</p>
+        </div>
+
         <progress-bar
             :progressWidth="progressWidth">
         </progress-bar>
@@ -128,7 +190,7 @@
         <div class="editor__wrapper--action">
             <div>
                 <button @click="prevStep()">Prev</button>
-                <button @click="nextStep()">Next</button>
+                <button @click="nextStep()" v-if="currentStep !== maxStepProgress">Next</button>
                 <p>Step {{currentStep}} / {{amountOfSteps}}</p>
             </div>
             <div>
@@ -144,6 +206,7 @@
             <html-course
                     @next-step="nextStep"
                     @prev-step="prevStep"
+                    :questions="course.questions"
                     :currentStep="currentStep">
             </html-course>
         </div>
@@ -169,6 +232,24 @@
 
 <style lang="scss" scoped>
 
+    .success{
+        background:greenyellow;
+        color:darkblue;
+    }
+    .fail{
+        color:darkred;;
+        background:red;
+    }
+
+    .alert{
+        width:200px;
+        border-radius: 30px;
+        height: 35px;
+        position: fixed;
+        right: 20px;
+        top:20px;
+        transition: 0.4s;
+    }
 
 
     .maximize{
@@ -194,7 +275,7 @@
             width: 100%;
             background: #2d3451;
             box-sizing: border-box;
-            margin-bottom: -4px;
+            margin-bottom: -9px;
             div{
                 button:nth-child(2n+0){
                     margin: 11px -10px;

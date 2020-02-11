@@ -1,15 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import {questions} from "@/store/questions";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
-export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
+// @ts-ignore
+export const store =  new Vuex.Store({
   modules: {
+    questions
   }
-})
+});

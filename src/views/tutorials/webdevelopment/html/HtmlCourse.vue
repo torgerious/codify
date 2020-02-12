@@ -51,8 +51,14 @@
 //************************************************************************************
 
     <style  lang="scss">
+        .indent-wrapper{
+            text-indent: 20px;
+        }
         .indent{
             margin-left: 20px;
+        }
+        .indentX2{
+            margin-left: 40px;
         }
         .instructions{
             font-weight: bold;

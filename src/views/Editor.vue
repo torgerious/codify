@@ -201,6 +201,7 @@
                 let amountOfStepsIntoHundreds = 100 / this.amountOfSteps;
                 this.progressWidth = this.progressWidth + amountOfStepsIntoHundreds;
                 if (this.progressWidth >= 100) {
+                    this.progressWidth = 100;
                     this.showRunCodeButton = false;
                 }
             }

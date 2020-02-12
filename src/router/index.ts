@@ -3,14 +3,16 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Editor from "@/views/Editor.vue";
 import HtmlCourse from "@/views/tutorials/webdevelopment/html/HtmlCourse.vue";
+import CoursePage from "@/components/CoursePage.vue";
+import Register from "@/views/Register.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'coursepage',
+    component: CoursePage
   },
   {
     path: '/editor',
@@ -21,6 +23,11 @@ const routes = [
     path: '/step',
     name: 'step',
     component: HtmlCourse
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register
   },
   {
     path: '/about',

@@ -5,12 +5,18 @@ import Editor from "@/views/Editor.vue";
 import HtmlCourse from "@/views/tutorials/webdevelopment/html/HtmlCourse.vue";
 import CoursePage from "@/components/CoursePage.vue";
 import Register from "@/views/Register.vue";
+import Login from "@/views/Login.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
+    name: 'login',
+    component: Login
+  },
+  {
+    path: '/courses',
     name: 'coursepage',
     component: CoursePage
   },

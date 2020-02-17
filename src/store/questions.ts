@@ -23,7 +23,7 @@ export const enum mutationStringQuestions{
 }
 export const enum actionStringQuestions{
     postCourse = 'postCourse',
-    getContracts = 'getContracts'
+    getCourses = 'getCourses'
 }
 export const enum getterStringQuestions{
     course = 'course'
@@ -60,7 +60,7 @@ export const actions: ActionTree<QuestionState, any> = {
 
         });
     },
-    getContracts({commit}):Promise<ICourse>{
+    getCourses({commit}):Promise<ICourse>{
         return new Promise((resolve, reject) => {
             let course:ICourse;
             // let userId = localStorage.getItem('userId');

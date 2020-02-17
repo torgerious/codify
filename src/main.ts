@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import {store} from "@/store";
 import * as firebase from "firebase";
+import Inject from "@/Types/Inject";
+import {Rank} from "@/Types/Rank";
 // @ts-ignore
 // import VueCodemirror from 'vue-codemirror';
 // import 'codemirror/lib/codemirror.css';
@@ -20,7 +22,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const DB = firebase.firestore();
-
+Vue.use(Inject, {
+  Rank,
+});
 Vue.config.productionTip = false;
 // Vue.use(VueCodemirror, /* {
 //   options: { theme: 'base16-dark', ... },

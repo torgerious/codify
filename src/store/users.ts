@@ -1,5 +1,7 @@
 import { GetterTree, MutationTree, ActionTree } from "vuex";
 import { DB } from '@/main';
+import {Rank} from "@/Types/Rank";
+import {Course} from "@/Types/Courses";
 
 
 export interface UserState {
@@ -9,6 +11,9 @@ export interface IUser{
     name:string,
     email:string,
     userId:string,
+    points:number,
+    rank:Rank,
+    completedCourses:Course[],
 }
 
 
@@ -20,6 +25,7 @@ export const enum actionStringUser{
     GET_USER = 'getUser',
     POST_USER = 'postUser',
     UPDATE_USER = 'updateUser',
+    updateUserPoints = 'updateUserPoints'
 }
 export const enum getterStringUser{
     user = 'user'
@@ -93,6 +99,21 @@ export const actions: ActionTree<UserState, any> = {
             })
         })
     },
+    updateUserPoints({commit, state, dispatch}, payload:number):Promise<IUser>{
+        console.log("payload inside", payload);
+        return new Promise((resolve, reject) => {
+            let userID = localStorage.getItem('userId');
+            DB.collection("users").doc(userID as string).set({points:payload},
+                { merge: true }).then(function(doc:any){
+                console.log("RES pushed to state", payload);
+                dispatch(actionStringUser.GET_USER);
+                resolve(doc);
+            }).catch((err:any)=>{
+                console.log(err);
+                reject(err);
+            })
+        })
+    }
 };
 
 export const users = {

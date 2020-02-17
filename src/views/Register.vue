@@ -1,3 +1,4 @@
+import {Rank} from "../Types/Rank";
 //************************************************************************************
 //* Script ***************************************************************************
 //************************************************************************************
@@ -6,10 +7,11 @@
     "use strict";
 
     import Vue from "vue";
-    import { Component } from 'vue-property-decorator';
-    import  firebase from 'firebase';
+    import {Component} from 'vue-property-decorator';
+    import firebase from 'firebase';
     import {Action} from "vuex-class";
     import {actionStringUser, IUser} from "@/store/users";
+    import {Rank} from "@/Types/Rank";
 
     //* Component definition ************************************************************
 
@@ -40,6 +42,9 @@
                 let newUser:IUser = {
                     userId:userId,
                     email:this.email,
+                    points:0,
+                    rank:Rank.RANK_1,
+                    completedCourses: [],
                 };
 
                 if(res.additionalUserInfo.isNewUser){

@@ -7,20 +7,31 @@
 
         import Vue from "vue";
         import { Component } from 'vue-property-decorator';
+        import {Action, Getter} from "vuex-class";
+        import {actionStringUser, getterStringUser, IUser} from "@/store/users";
+        import UserHeader from "@/components/UserHeader.vue";
 
 //* Component definition ************************************************************
 
         @Component({
-            name: "course_page"
+            name: "course_page",
+            components: {UserHeader}
         })
 
 //* Class ***************************************************************************
 
         export default class CoursePage extends Vue {
+            @Action(actionStringUser.GET_USER)  getUser: (() => Promise<IUser>);
+            @Getter(getterStringUser.user)  user:IUser;
 
 
             navigate():void{
                 this.$router.push('/editor');
+            }
+            async created():Promise<any>{
+              await this.getUser();
+              console.log("user?", this.user);
+
             }
         }
 
@@ -32,7 +43,9 @@
 //************************************************************************************
 
     <template>
-        <div class="page">
+        <div class="page" v-if="user">
+            <user-header :user="user"></user-header>
+
             <p>Leaderboards | TopDonations | request a course </p>
             <h1>Course</h1>
             <div class="page__course--wrapper">

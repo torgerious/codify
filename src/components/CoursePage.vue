@@ -7,9 +7,10 @@
 
         import Vue from "vue";
         import { Component } from 'vue-property-decorator';
-        import {Action, Getter} from "vuex-class";
+        import {Action, Getter, Mutation} from "vuex-class";
         import {actionStringUser, getterStringUser, IUser} from "@/store/users";
         import UserHeader from "@/components/UserHeader.vue";
+import { actionStringQuestions, ICourse, getterStringQuestions, mutationStringQuestions } from '../store/questions';
 
 //* Component definition ************************************************************
 
@@ -23,15 +24,27 @@
         export default class CoursePage extends Vue {
             @Action(actionStringUser.GET_USER)  getUser: (() => Promise<IUser>);
             @Getter(getterStringUser.user)  user:IUser;
+            @Action(actionStringQuestions.getAllCourses) getAllCourses:(() => Promise<ICourse[]>);
+            @Getter(getterStringQuestions.courses) courses:ICourse[];
 
+            allCourses:ICourse[] = []; 
 
             navigate():void{
                 this.$router.push('/editor');
             }
+
             async created():Promise<any>{
               await this.getUser();
-              console.log("user?", this.user);
+              this.allCourses = await this.getAllCourses();
 
+
+                //Mark completed courses as completed
+                this.allCourses.map((course,i) => {
+                    const found = this.allCourses.map(title => this.user.completedCourses.includes(title.title))
+                    Object.assign(course, {hasCompletedCourse:found[i]});
+                })
+                  
+           
             }
         }
 
@@ -48,16 +61,21 @@
 
             <p>Leaderboards | TopDonations | request a course </p>
             <h1>Course</h1>
-            <div class="page__course--wrapper">
-                <div class="page__course--wrapper--card" @click="navigate('/editor')">
-                    <h2>Learn to code a website</h2>
+            <div  v-if="allCourses.length > 0" class="page__course--wrapper">
+                <div
+                    class="page__course--wrapper--card"
+                    :class="{'completed': cur.hasCompletedCourse}"
+                    v-for="(cur, i) in allCourses" 
+                    :key="i"
+                    @click="navigate('/editor')">
+                    <h2>{{cur.title}}</h2>
                 </div>
-                <div class="page__course--wrapper--card">
+                <!-- <div class="page__course--wrapper--card">
                     <h2>Learn HTML</h2>
                 </div>
                 <div class="page__course--wrapper--card">
                     <h2>Learn CSS</h2>
-                </div>
+                </div> -->
 
             </div>
         </div>
@@ -68,6 +86,11 @@
 //************************************************************************************
 
     <style scoped lang="scss">
+
+        .completed{
+            background:green;
+        }
+
         .page{
             width:100%;
             height: auto;

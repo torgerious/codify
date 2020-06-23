@@ -13,7 +13,7 @@ export interface IUser{
     userId:string,
     points:number,
     rank:Rank,
-    completedCourses:Course[],
+    completedCourses:string[],
 }
 
 
@@ -77,6 +77,10 @@ export const actions: ActionTree<UserState, any> = {
 
             email: newUser.email,
             userId:newUser.userId,
+            rank:newUser.rank,
+            points:0,
+            completedCourses: [],
+            
         }).then((res: any) => {
             console.log("res", res);
         }).catch((err: any) => {
@@ -99,11 +103,11 @@ export const actions: ActionTree<UserState, any> = {
             })
         })
     },
-    updateUserPoints({commit, state, dispatch}, payload:number):Promise<IUser>{
-        console.log("payload inside", payload);
+    updateUserPoints({commit, state, dispatch}, payload:Partial<IUser>):Promise<IUser>{
+        console.log("payload inside updateuser", payload);
         return new Promise((resolve, reject) => {
             let userID = localStorage.getItem('userId');
-            DB.collection("users").doc(userID as string).set({points:payload},
+            DB.collection("users").doc(userID as string).set({points:payload.points, completedCourses:payload.completedCourses},
                 { merge: true }).then(function(doc:any){
                 console.log("RES pushed to state", payload);
                 dispatch(actionStringUser.GET_USER);

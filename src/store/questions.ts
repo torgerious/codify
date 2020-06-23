@@ -4,6 +4,7 @@ import {DB} from "@/main";
 
 export interface QuestionState {
     course: ICourse | null,
+    courses:ICourse[] | null,
 }
 
 export interface ICourse {
@@ -20,25 +21,32 @@ export interface IQuestions {
 
 export const enum mutationStringQuestions{
     setCourse = 'setCourse',
+    setCourses = 'setCourses'
 }
 export const enum actionStringQuestions{
     postCourse = 'postCourse',
-    getCourses = 'getCourses'
+    getCourses = 'getCourses',
+    getAllCourses = 'getAllCourses'
 }
 export const enum getterStringQuestions{
-    course = 'course'
+    course = 'course',
+    courses = 'courses'
 }
 
 export const state:QuestionState = {
     course:null,
+    courses:[],
 };
 
 export const getters: GetterTree<QuestionState, any> = {
     course: state => state.course,
+    courses: state => state.courses,
 };
 
 export const mutations: MutationTree<any> = {
         setCourse(state, payload:ICourse){state.course = payload},
+        setCourses(state, payload:ICourse[]){state.courses = payload},
+
 };
 
 export const actions: ActionTree<QuestionState, any> = {
@@ -78,6 +86,34 @@ export const actions: ActionTree<QuestionState, any> = {
 
                 commit(mutationStringQuestions.setCourse, course);
                 resolve(course);
+            }).catch((e:Error) => {
+                console.log("Error", e);
+                reject(e);
+            });
+        });
+
+    },
+    getAllCourses({commit}):Promise<ICourse[]>{
+        return new Promise((resolve, reject) => {
+            let courses:ICourse[] = [];
+
+            DB.collection("course").get().then((doc:any) => {
+                doc.forEach((res: { data: () => Partial<ICourse>; id: any; }) => {
+                    let singleCourse: Partial<ICourse> = res.data();
+                    let newCourse = {
+                        questions:singleCourse.questions,
+                        title:singleCourse.title,
+                        id:res.id,
+                    };
+                    courses.push(newCourse as ICourse)
+                });
+
+                console.log("courselist", courses);
+
+
+
+                commit(mutationStringQuestions.setCourses, courses);
+                resolve(courses);
             }).catch((e:Error) => {
                 console.log("Error", e);
                 reject(e);

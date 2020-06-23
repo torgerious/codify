@@ -40,6 +40,7 @@ import {Rank} from "../Types/Rank";
                 localStorage.setItem('token', token);
 
                 let newUser:IUser = {
+                    name:'',
                     userId:userId,
                     email:this.email,
                     points:0,
@@ -47,9 +48,10 @@ import {Rank} from "../Types/Rank";
                     completedCourses: [],
                 };
 
-                if(res.additionalUserInfo.isNewUser){
-                    this.postUser(newUser);
-                }
+
+                    if(res.additionalUserInfo && res.additionalUserInfo.isNewUser){
+                        this.postUser(newUser);
+                    }
 
 
 

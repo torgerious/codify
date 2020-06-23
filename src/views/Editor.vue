@@ -40,7 +40,7 @@
         @Getter(getterStringQuestions.course) course:ICourse;
         @Action(actionStringUser.GET_USER)  getUser: (() => Promise<IUser>);
         @Getter(getterStringUser.user)  user:IUser;
-        @Action(actionStringUser.updateUserPoints) updateUserPoints:(payload:number) => Promise<void>;
+        @Action(actionStringUser.updateUserPoints) updateUserPoints:(payload:Partial<IUser>) => Promise<void>;
 
 
         userProgressWidthFromDB:number = 0;
@@ -135,8 +135,17 @@
                     this.calculateProgressWidthNext();
                     this.hasCompletedCurrentCourse = true;
                     let newPointAmount = this.user.points + 10;
+                    let userCompletedCourses = this.user.completedCourses;
 
-                    this.updateUserPoints(newPointAmount);
+                    userCompletedCourses.push(this.course.title)
+
+
+                    let newUserPayload:Partial<IUser> = {
+                        points:newPointAmount,
+                        completedCourses:userCompletedCourses,
+                    };
+
+                    this.updateUserPoints(newUserPayload);
 
                 }else{
                     this.nextStep();
@@ -174,10 +183,11 @@
 
         mounted(){
             // console.log('this is current codemirror object', this.codemirror)
-            console.log(this.course);
         }
         async created():Promise<any>{
             let courses = await this.getCourses();
+            console.log(this.course);
+
             await this.getUser();
 
             let hasCompletedThisCourse = this.user.completedCourses.includes(courses.title);
@@ -354,9 +364,10 @@
         &--code{
             width: 33.33%;
             box-sizing: border-box;
-           height:500px;
+            height:500px;
             float: left;
-
+            background: #292d3e;
+            text-align: left;
         }
         &--description{
             width: 33.33%;

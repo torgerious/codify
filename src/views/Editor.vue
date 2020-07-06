@@ -16,6 +16,7 @@
     import SuccessCodeIcon from "@/components/svg/SuccessCodeIcon.vue";
     import UserHeader from "@/components/UserHeader.vue";
     import {actionStringUser, getterStringUser, IUser} from "@/store/users";
+import { actionStringCourseProgress, ICourseProgress } from '../store/courseProgress';
 
 
     @Component({
@@ -41,17 +42,18 @@
         @Action(actionStringUser.GET_USER)  getUser: (() => Promise<IUser>);
         @Getter(getterStringUser.user)  user:IUser;
         @Action(actionStringUser.updateUserPoints) updateUserPoints:(payload:Partial<IUser>) => Promise<void>;
+        @Action(actionStringCourseProgress.postCourseProgress) postCourseProgress:(payload:ICourseProgress) => Promise<void>;
 
 
-        userProgressWidthFromDB:number = 0;
+        // userProgressWidthFromDB:number = 0;
         showRunCodeButton:boolean = true;
         hasCompletedCurrentCourse:boolean = false;
         maxStepProgress:number = 5;
         feedbackType:string = 'success';
         feedbackMessage:string = '';
-        currentStep: number = 3;
+        currentStep: number = 0;
         amountOfSteps:number = 0;
-        progressWidth:number = 0;
+        // progressWidth:number = 0;
         code:string =  '';
         isShowingFeedback:boolean = false;
         // answer:string = '<p>hello</p>';
@@ -89,9 +91,9 @@
         // }
 
         nextStep():void{
-            if(this.userProgressWidthFromDB < this.currentStep){
-                this.calculateProgressWidthNext();
-            }
+            // if(this.userProgressWidthFromDB < this.currentStep){
+            //     this.calculateProgressWidthNext();
+            // }
             if(this.currentStep !== this.amountOfSteps){
                 this.currentStep = this.currentStep +1;
             }
@@ -132,7 +134,7 @@
                 //Check if user is on last step of course
                 if(this.currentStep +1 === this.amountOfSteps){
                     console.log("COMPLETED, added webdev to badges");
-                    this.calculateProgressWidthNext();
+                    // this.calculateProgressWidthNext();
                     this.hasCompletedCurrentCourse = true;
                     let newPointAmount = this.user.points + 10;
                     let userCompletedCourses = this.user.completedCourses;
@@ -163,18 +165,18 @@
 
         }
 
-         calculateProgressWidthNext():void{
-            if(this.userProgressWidthFromDB > this.progressWidth){
-                console.log("do nuthin")
-            }else{
-                let amountOfStepsIntoHundreds = 100 / this.amountOfSteps;
-                this.progressWidth = this.progressWidth + amountOfStepsIntoHundreds;
-                if (this.progressWidth >= 100) {
-                    this.progressWidth = 100;
-                    this.showRunCodeButton = false;
-                }
-            }
-        }
+        //  calculateProgressWidthNext():void{
+        //     if(this.userProgressWidthFromDB > this.progressWidth){
+        //         console.log("do nuthin")
+        //     }else{
+        //         let amountOfStepsIntoHundreds = 100 / this.amountOfSteps;
+        //         this.progressWidth = this.progressWidth + amountOfStepsIntoHundreds;
+        //         if (this.progressWidth >= 100) {
+        //             this.progressWidth = 100;
+        //             this.showRunCodeButton = false;
+        //         }
+        //     }
+        // }
         // calculateProgressWidthPrev():void{
         //     // if(this.)
         //     let amountOfStepsIntoHundreds =  100 / this.amountOfSteps;
@@ -194,10 +196,21 @@
 
             if(hasCompletedThisCourse){
                 this.hasCompletedCurrentCourse = true;
-                this.progressWidth = 100;
+                // this.progressWidth = 100;
             }else{
 
             }
+
+            //TODO Implement check to se if progress has started
+            let coursePayload:ICourseProgress = {
+                title:this.course.title,
+                currentStep:this.currentStep,
+            }
+            this.postCourseProgress(coursePayload);
+
+            
+
+
 
 
 
@@ -205,8 +218,8 @@
             this.maxStepProgress = 3;
             let currentUserProgress = Math.pow( this.maxStepProgress, courses.questions.length);
 
-            this.progressWidth = currentUserProgress;
-            this.userProgressWidthFromDB = currentUserProgress;
+            // this.progressWidth = currentUserProgress;
+            // this.userProgressWidthFromDB = currentUserProgress;
             // console.log("cur prog?", currentUserProgress);
             // this.calculateProgressWidthNext();
 
@@ -235,9 +248,9 @@
             <p>{{feedbackMessage}}</p>
         </div>
 
-        <progress-bar
+        <!-- <progress-bar
             :progressWidth="progressWidth">
-        </progress-bar>
+        </progress-bar> -->
 
         <div class="editor__wrapper--action">
             <div>

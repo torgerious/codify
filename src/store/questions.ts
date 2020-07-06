@@ -11,6 +11,9 @@ export interface ICourse {
     questions: IQuestions[],
     title:string,
 }
+
+
+
 export interface IQuestions {
     answer:string,
     hasCodeChallenge:boolean,
@@ -121,6 +124,8 @@ export const actions: ActionTree<QuestionState, any> = {
         });
 
     },
+
+
 
 };
 

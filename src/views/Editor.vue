@@ -43,6 +43,7 @@ import { actionStringCourseProgress, ICourseProgress } from '../store/courseProg
         @Getter(getterStringUser.user)  user:IUser;
         @Action(actionStringUser.updateUserPoints) updateUserPoints:(payload:Partial<IUser>) => Promise<void>;
         @Action(actionStringCourseProgress.postCourseProgress) postCourseProgress:(payload:ICourseProgress) => Promise<void>;
+        @Action(actionStringCourseProgress.getCoursesProgress) getCoursesProgress:() => Promise<ICourseProgress>;
 
 
         // userProgressWidthFromDB:number = 0;
@@ -201,12 +202,17 @@ import { actionStringCourseProgress, ICourseProgress } from '../store/courseProg
 
             }
 
+            //get course progress
+            await this.getCoursesProgress();
+
             //TODO Implement check to se if progress has started
             let coursePayload:ICourseProgress = {
                 title:this.course.title,
                 currentStep:this.currentStep,
             }
-            this.postCourseProgress(coursePayload);
+
+
+            await this.postCourseProgress(coursePayload);
 
             
 

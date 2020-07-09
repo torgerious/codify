@@ -1,9 +1,14 @@
 import { GetterTree, MutationTree, ActionTree } from "vuex";
 import {DB} from "@/main";
 
+export interface IUserCourseProgress {
+    courseProgress:ICourseProgress[],
+    userId:string,
+}
 
 export interface CourseProgressState {
     courseProgress: ICourseProgress[] | null,
+    userCourseProgress:IUserCourseProgress | null;
 }
 
 
@@ -16,9 +21,12 @@ export interface ICourseProgress{
 
 export const enum mutationStringCourseProgress{
     setCourseProgress = 'setCourseProgress',
+    setUserCourseProgress = 'setUserCourseProgress',
+
 }
 export const enum actionStringCourseProgress{
     postCourseProgress = 'postCourseProgress',
+    getCoursesProgress = 'getCoursesProgress'
 }
 export const enum getterStringCourseProgress{
     courseProgress = 'courseProgress',
@@ -26,6 +34,7 @@ export const enum getterStringCourseProgress{
 
 export const state:CourseProgressState = {
     courseProgress:null,
+    userCourseProgress:null,
 };
 
 export const getters: GetterTree<CourseProgressState, any> = {
@@ -34,6 +43,8 @@ export const getters: GetterTree<CourseProgressState, any> = {
 
 export const mutations: MutationTree<any> = {
         setCourseProgress(state, payload:ICourseProgress){state.course = payload},
+        setUserCourseProgress(state, payload:IUserCourseProgress){state.userCourseProgress = payload},
+
 };
 
 
@@ -57,31 +68,29 @@ export const actions: ActionTree<CourseProgressState, any> = {
 
         });
     },
-    // getCourses({commit}):Promise<ICourse>{
-    //     return new Promise((resolve, reject) => {
-    //         let course:ICourse;
-    //         // let userId = localStorage.getItem('userId');
 
-    //         DB.collection("course").where("title", "==", 'HTML course').get().then((doc:any) => {
-    //             doc.forEach((res: { data: () => Partial<ICourse>; id: any; }) => {
-    //                 let singleCourse: Partial<ICourse> = res.data();
-    //                 let newCourse = {
-    //                     questions:singleCourse.questions,
-    //                     title:singleCourse.title,
-    //                     id:res.id,
-    //                 };
-    //                 course = newCourse as ICourse;
-    //             });
+    getCoursesProgress({commit}):Promise<ICourseProgress>{
+        return new Promise((resolve, reject) => {
+            let courseProgress:ICourseProgress;
+            let userId = localStorage.getItem('userId');
 
-    //             commit(mutationStringQuestions.setCourse, course);
-    //             resolve(course);
-    //         }).catch((e:Error) => {
-    //             console.log("Error", e);
-    //             reject(e);
-    //         });
-    //     });
+            DB.collection("courseProgress").where("userId", "==", userId).get().then((doc:any) => {
+                doc.forEach((res: { data: () => Partial<ICourseProgress>; id: any; }) => {
+                    console.log("result from db coll", res.data());
+                    let singleCourseProgress: Partial<ICourseProgress> = res.data();
+                    courseProgress = singleCourseProgress as ICourseProgress;
+                    commit(mutationStringCourseProgress.setUserCourseProgress, singleCourseProgress);
+                });
 
-    // },
+                resolve(courseProgress);
+            }).catch((e:Error) => {
+                console.log("Error", e);
+                reject(e);
+            });
+        });
+
+    },
+
     // getAllCourses({commit}):Promise<ICourse[]>{
     //     return new Promise((resolve, reject) => {
     //         let courses:ICourse[] = [];

@@ -82,6 +82,7 @@ export const actions: ActionTree<UserState, any> = {
             completedCourses: [],
             
         }).then((res: any) => {
+            commit(mutationStringUser.SET_USER, newUser);
             console.log("res", res);
         }).catch((err: any) => {
             console.log(err);

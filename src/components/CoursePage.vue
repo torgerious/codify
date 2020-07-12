@@ -12,6 +12,7 @@
         import UserHeader from "@/components/UserHeader.vue";
 import { actionStringQuestions, ICourse, getterStringQuestions, mutationStringQuestions } from '../store/questions';
         import MainHeader from "@/components/MainHeader.vue";
+        import {actionStringCourseProgress, ICourseProgress, IUserCourseProgress} from "@/store/courseProgress";
 
 //* Component definition ************************************************************
 
@@ -27,6 +28,9 @@ import { actionStringQuestions, ICourse, getterStringQuestions, mutationStringQu
             @Getter(getterStringUser.user)  user:IUser;
             @Action(actionStringQuestions.getAllCourses) getAllCourses:(() => Promise<ICourse[]>);
             @Getter(getterStringQuestions.courses) courses:ICourse[];
+            @Action(actionStringCourseProgress.postCourseProgress) postCourseProgress:(payload:ICourseProgress[]) => Promise<void>;
+            @Action(actionStringCourseProgress.getCoursesProgress) getCoursesProgress:() => Promise<IUserCourseProgress>;
+
 
             allCourses:ICourse[] = []; 
 
@@ -35,8 +39,32 @@ import { actionStringQuestions, ICourse, getterStringQuestions, mutationStringQu
             }
 
             async created():Promise<any>{
-              await this.getUser();
+
+              console.log("does this urn?=");
+
+              let courseProgressTable = await this.getCoursesProgress();
+                console.log("cors prog", courseProgressTable);
+              if(!courseProgressTable){
+                  //create course progress DB table
+                  let coursePayload:ICourseProgress = {
+                      title:'signup field',
+                      currentStep:0,
+                  }
+
+                  let localCourseProgress:ICourseProgress[] = [];
+                  localCourseProgress.push(coursePayload);
+
+                  await this.postCourseProgress(localCourseProgress);
+              } else{
+                  console.log("Table exists");
+              }
+
+
               this.allCourses = await this.getAllCourses();
+              console.log("allcourses...", this.allCourses);
+
+                await this.getUser();
+
 
 
                 //Mark completed courses as completed

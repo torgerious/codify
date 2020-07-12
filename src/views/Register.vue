@@ -25,14 +25,14 @@ import {Rank} from "../Types/Rank";
         email:string = "";
         password:string = "";
 
-        @Action(actionStringUser.POST_USER) postUser:(newUser:Partial<IUser>) => void;
+        @Action(actionStringUser.POST_USER) postUser:(newUser:Partial<IUser>) => Promise<void>;
 
         navigate(route:string):void{
             this.$router.push(route)
         }
 
-        registerNewUser():void{
-            firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((res) => {
+        async registerNewUser():void{
+             firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((res) => {
                 console.log(res);
                 let userId = res.user.uid;
                 let token = res.user.ma;
@@ -50,12 +50,14 @@ import {Rank} from "../Types/Rank";
 
 
                     if(res.additionalUserInfo && res.additionalUserInfo.isNewUser){
-                        this.postUser(newUser);
+                        this.postUser(newUser).then(res => {
+                            this.$router.push("/courses");
+
+                        });
                     }
 
 
 
-                this.$router.push("/courses");
             }).catch(function(error) {
                 // Handle Errors here.
                 let errorCode = error.code;

@@ -19,6 +19,8 @@ export interface ICourseProgress{
 }
 
 
+
+
 export const enum mutationStringCourseProgress{
     setCourseProgress = 'setCourseProgress',
     setUserCourseProgress = 'setUserCourseProgress',
@@ -49,7 +51,7 @@ export const mutations: MutationTree<any> = {
 
 
 export const actions: ActionTree<CourseProgressState, any> = {
-    async postCourseProgress({commit, dispatch}, payload:ICourseProgress):Promise<Partial<ICourseProgress>>{
+    async postCourseProgress({commit, dispatch}, payload:ICourseProgress[]):Promise<Partial<ICourseProgress>>{
         let userId = localStorage.getItem('userId');
         console.log("RAN coursproress");
 
@@ -69,18 +71,23 @@ export const actions: ActionTree<CourseProgressState, any> = {
         });
     },
 
-    getCoursesProgress({commit}):Promise<ICourseProgress>{
+    getCoursesProgress({commit}):Promise<IUserCourseProgress | null>{
         return new Promise((resolve, reject) => {
-            let courseProgress:ICourseProgress;
+            let courseProgress:IUserCourseProgress | null;
             let userId = localStorage.getItem('userId');
 
             DB.collection("courseProgress").where("userId", "==", userId).get().then((doc:any) => {
-                doc.forEach((res: { data: () => Partial<ICourseProgress>; id: any; }) => {
+                console.log("DOC?=", doc)
+                if(doc.empty) {
+                    courseProgress = null;
+                }
+                    doc.forEach((res: { data: () => IUserCourseProgress; id: any; }) => {
                     console.log("result from db coll", res.data());
-                    let singleCourseProgress: Partial<ICourseProgress> = res.data();
-                    courseProgress = singleCourseProgress as ICourseProgress;
-                    commit(mutationStringCourseProgress.setUserCourseProgress, singleCourseProgress);
+                        courseProgress = res.data();
+                    // courseProgress = singleCourseProgress as ICourseProgress;
                 });
+
+                commit(mutationStringCourseProgress.setUserCourseProgress, courseProgress);
 
                 resolve(courseProgress);
             }).catch((e:Error) => {

@@ -16,7 +16,7 @@
     import SuccessCodeIcon from "@/components/svg/SuccessCodeIcon.vue";
     import UserHeader from "@/components/UserHeader.vue";
     import {actionStringUser, getterStringUser, IUser} from "@/store/users";
-import { actionStringCourseProgress, ICourseProgress } from '../store/courseProgress';
+    import {actionStringCourseProgress, ICourseProgress, IUserCourseProgress} from '../store/courseProgress';
 
 
     @Component({
@@ -42,8 +42,8 @@ import { actionStringCourseProgress, ICourseProgress } from '../store/courseProg
         @Action(actionStringUser.GET_USER)  getUser: (() => Promise<IUser>);
         @Getter(getterStringUser.user)  user:IUser;
         @Action(actionStringUser.updateUserPoints) updateUserPoints:(payload:Partial<IUser>) => Promise<void>;
-        @Action(actionStringCourseProgress.postCourseProgress) postCourseProgress:(payload:ICourseProgress) => Promise<void>;
-        @Action(actionStringCourseProgress.getCoursesProgress) getCoursesProgress:() => Promise<ICourseProgress>;
+        @Action(actionStringCourseProgress.postCourseProgress) postCourseProgress:(payload:ICourseProgress[]) => Promise<void>;
+        @Action(actionStringCourseProgress.getCoursesProgress) getCoursesProgress:() => Promise<IUserCourseProgress>;
 
 
         // userProgressWidthFromDB:number = 0;
@@ -203,16 +203,27 @@ import { actionStringCourseProgress, ICourseProgress } from '../store/courseProg
             }
 
             //get course progress
-            await this.getCoursesProgress();
+            let courseProgress:IUserCourseProgress | null;
+            courseProgress = await this.getCoursesProgress();
 
-            //TODO Implement check to se if progress has started
-            let coursePayload:ICourseProgress = {
-                title:this.course.title,
-                currentStep:this.currentStep,
+            console.log("course progress from DB", courseProgress);
+            if(courseProgress){
+                courseProgress.courseProgress.map(async progress => {
+                    //Check if user has started this course before
+                    if(progress.title === this.course.title){
+                        console.log("Has started progress on this course");
+                    }else{
+                        //set localProgress to DB progress, so the user will start at his current course progress
+                        console.log("firstime on this course");
+                    }
+                })
+            } else {
+                console.log("course progress does not exist yet!");
             }
 
 
-            await this.postCourseProgress(coursePayload);
+
+
 
             
 
